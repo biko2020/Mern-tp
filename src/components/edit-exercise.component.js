@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker';
 import axios from 'axios';
 import "react-datepicker/dist/react-datepicker.css";
 
-export default class CreateExercises extends Component {
+export default class EditExercises extends Component {
 
     constructor(props){
         super(props);
@@ -39,14 +39,28 @@ export default class CreateExercises extends Component {
             genders: ['Male','Female'],
             
         })
-
+        axios.get('http://localhost:5000/tp/'+this.props.match.params.id)
+        .then(response => {
+          this.setState({
+            username: response.data.username,
+            gender: response.data.gender,
+            dob: new Date(response.data.dob),
+            news: response.data.news,
+            email: response.data.email,
+            photo: response.data.photo
+          })   
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
       axios.get('http://localhost:5000/users/')
       .then(response =>{
         if(response.data.length > 0 ) {
           this.setState({
 
             users: response.data.map(user => user.username),
-            username :response.data[0].username
+
+            
           })
         }
       })
@@ -98,7 +112,7 @@ export default class CreateExercises extends Component {
         }
         console.log(exercice);
 
-        axios.post('http://localhost:5000/tp/add', exercice)
+        axios.post('http://localhost:5000/tp/update/'+this.props.match.params.id, exercice)
         .then(res => console.log(res.data));
   
       this.setState({
@@ -111,7 +125,7 @@ export default class CreateExercises extends Component {
     render() {
         return (
         <div>
-          <h3>Create TP</h3>
+          <h3>Edite Exercise</h3>
           <form onSubmit = {this.onSubmit}>
             <div className="form-group"> 
               <label>Username: </label>
@@ -184,7 +198,7 @@ export default class CreateExercises extends Component {
                   />
             </div>
             <div className="form-group">
-              <input type="submit" value="Create Exercise Log" className="btn btn-primary" />
+              <input type="submit" value="Edite Exercise" className="btn btn-primary" />
             </div>
           </form>
         </div>

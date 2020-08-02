@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker';
 import axios from 'axios';
 import "react-datepicker/dist/react-datepicker.css";
 
-export default class CreateExercises extends Component {
+export default class updateUser extends Component {
 
     constructor(props){
         super(props);
@@ -39,14 +39,28 @@ export default class CreateExercises extends Component {
             genders: ['Male','Female'],
             
         })
-
-      axios.get('http://localhost:5000/users/')
+        axios.get('https://randomuser.me/api/?results'+this.props.match.params.uuid)
+        .then(response => {
+          this.setState({
+            username: response.data.login.username,
+            gender: response.data.gender,
+            dob: new Date(response.data.dob),
+            news: response.data.news,
+            email: response.data.email,
+            photo: response.data.photo
+          })   
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+      axios.get('https://randomuser.me/api/?results')
       .then(response =>{
         if(response.data.length > 0 ) {
           this.setState({
 
             users: response.data.map(user => user.username),
-            username :response.data[0].username
+
+            
           })
         }
       })
@@ -88,17 +102,17 @@ export default class CreateExercises extends Component {
     onSubmit(e) {
         e.preventDefault();
 
-        const  exercice = {
-            username: this.state.username,
+        const  modifier = {
+            username: this.state.login.username,
             gender: this.state.gender,
             dob: this.state.dob,
             news: this.state.news,
             email: this.state.email,
             photo: this.state.photo
         }
-        console.log(exercice);
+        //console.log(modifier);
 
-        axios.post('http://localhost:5000/tp/add', exercice)
+        axios.post('http://localhost:5000/update_User/update/'+this.props.match.params.uuid)
         .then(res => console.log(res.data));
   
       this.setState({
@@ -111,7 +125,7 @@ export default class CreateExercises extends Component {
     render() {
         return (
         <div>
-          <h3>Create TP</h3>
+          <h3>Modifier un Utilisateur</h3>
           <form onSubmit = {this.onSubmit}>
             <div className="form-group"> 
               <label>Username: </label>
@@ -184,7 +198,7 @@ export default class CreateExercises extends Component {
                   />
             </div>
             <div className="form-group">
-              <input type="submit" value="Create Exercise Log" className="btn btn-primary" />
+              <input type="submit" value="Modifier user" className="btn btn-primary" />
             </div>
           </form>
         </div>
